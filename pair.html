@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhora-MD Bot Pairing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .header {
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .qr-container {
+            background: #f5f5f5;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            min-height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        #qrcode {
+            width: 250px;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loading {
+            color: #667eea;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: left;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .info-box strong {
+            color: #667eea;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        
+        .status.connecting {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .instructions {
+            text-align: left;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .instructions li {
+            margin: 8px 0;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #999;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🤖</div>
+            <h1>Dhora-MD Bot</h1>
+            <p class="subtitle">WhatsApp Bot Pairing Interface</p>
+        </div>
+        
+        <div id="status" class="status connecting">⏳ Initializing...</div>
+        
+        <div class="qr-container">
+            <div id="qrcode" class="loading">
+                <span>🔄 Generating QR Code...</span>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <strong>📱 How to Pair:</strong>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Open WhatsApp on your phone</li>
+                <li>Go to Settings → Linked Devices</li>
+                <li>Scan the QR code above</li>
+                <li>Wait for connection confirmation</li>
+            </ul>
+        </div>
+        
+        <div class="instructions">
+            <ol>
+                <li>Make sure WhatsApp is installed on your phone</li>
+                <li>Scan the QR code with WhatsApp's linked device feature</li>
+                <li>Keep this page open during pairing</li>
+                <li>Connection will establish automatically</li>
+            </ol>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn-primary" onclick="refreshQR()">🔄 Refresh QR</button>
+            <button class="btn-secondary" onclick="goHome()">← Back Home</button>
+        </div>
+        
+        <div class="footer">
+            <p>🔐 Your connection is secure and encrypted</p>
+            <p>Dhora-MD Bot v3.0.0</p>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        let qrcodeInstance = null;
+        
+        function generateQR(data = 'https://github.com/sessypanther-droid/Dhora-MD-') {
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+            
+            qrcodeInstance = new QRCode(qrContainer, {
+                text: data,
+                width: 250,
+                height: 250,
+                colorDark: '#667eea',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            updateStatus('connected', '✅ Bot Ready! Scan the QR code to pair');
+        }
+        
+        function updateStatus(type, message) {
+            const statusEl = document.getElementById('status');
+            statusEl.className = 'status ' + type;
+            statusEl.textContent = message;
+        }
+        
+        function refreshQR() {
+            updateStatus('connecting', '🔄 Refreshing QR code...');
+            setTimeout(() => {
+                generateQR();
+            }, 500);
+        }
+        
+        function goHome() {
+            window.location.href = '/';
+        }
+        
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            setTimeout(generateQR, 500);
+        });
+    </script>
+</body>
+</html>

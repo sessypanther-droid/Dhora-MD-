@@ -26,7 +26,7 @@ app.use('/', async (req, res, next) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`\nDon't Forget To Give Star ‼️\n\n༊·˚ 𝐐υєєη 𝐒єуα 𝐗м∂ 𝐕3 ༊·˚ NEW UPDATE\n\nServer running on http://localhost:` + PORT)
+    console.log(`\nDon't Forget To Give Star ‼️\n\n vishi md·˚ NEW UPDATE\n\nServer running on http://localhost:` + PORT)
 });
 
 module.exports = app;

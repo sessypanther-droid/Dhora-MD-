@@ -61,6 +61,11 @@ const inviteToChannels = async (socket, m, userId) => {
         // Channel information
         const channels = [
             {
+                name: '𝐃𝐎𝐑𝐀-𝐌𝐃 𝐌𝐈𝐍𝐈 𝐁𝐎𝐓 💀',
+                link: 'https://whatsapp.com/channel/0029Vb8er599WtC2ktRDrj2h',
+                description: 'Official Bot Updates & Announcements'
+            },
+            {
                 name: '𝐑𝐔𝐁𝐈 𝐖𝐀𝐃𝐀𝐍 𝐀𝐍𝐃 𝐒𝐓𝐀𝐓𝐔𝐒 𝐕𝐄𝐃𝐈𝐎𝐒🩵',
                 link: 'https://whatsapp.com/channel/0029VbE2F3sIiRok3H5zaX42',
                 description: 'Latest Status Videos & Updates'
@@ -89,7 +94,7 @@ const inviteToChannels = async (socket, m, userId) => {
             text: inviteMessage
         });
 
-        console.log(`✅ Channel invitation sent to ${userId}`);
+        console.log(`✅ Channel invitations sent to ${userId}`);
 
     } catch (error) {
         console.log('Error in channel invite:', error.message);

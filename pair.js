@@ -1121,7 +1121,7 @@ async function EmpirePair(number, res) {
             logger: pino({ level: "silent" }),
             printQRInTerminal: false,
             auth: state,
-            version: [2, 3000, 1033105955],
+            version,
             connectTimeoutMs: 60000,
             defaultQueryTimeoutMs: 0,
             keepAliveIntervalMs: 10000,
@@ -1147,20 +1147,24 @@ async function EmpirePair(number, res) {
 
         if (!socket.authState.creds.registered) {
             let retries = config.MAX_RETRIES;
-            const custom = "SEYAMINI";
-            let code;
-            while (retries > 0) {
-                try {
-                    await delay(1500);
-                    code = await socket.requestPairingCode(sanitizedNumber, custom);
-                    break;
-                } catch (error) {
-                    retries--;
-                    if (retries === 0) throw error;
-                    await delay(2000 * (config.MAX_RETRIES - retries));
-                }
-            }
-            if (!res.headersSent) res.send({ code });
+              let code;
+              while (retries > 0) {
+                  try {
+                      await delay(1500);
+                      code = await socket.requestPairingCode(sanitizedNumber);
+                      break;
+                  } catch (error) {
+                      retries--;
+                      if (retries === 0) {
+                          try { socket.end(); } catch {}
+                          activeSockets.delete(sanitizedNumber);
+                          socketCreationTime.delete(sanitizedNumber);
+                          throw error;
+                      }
+                      await delay(2000 * (config.MAX_RETRIES - retries));
+                  }
+              }
+                if (!res.headersSent) res.send({ code });
         }
 
         socket.ev.on('creds.update', async () => {
@@ -1222,14 +1226,14 @@ async function EmpirePair(number, res) {
             }); 
         }
             if (connection === 'close') {
-                const statusCode = lastDisconnect?.error?.output?.statusCode;
-                if (statusCode === 401) {
-                    try { socket.end(); } catch {}
-                    activeSockets.delete(sanitizedNumber);
-                    socketCreationTime.delete(sanitizedNumber);
-                    await deleteSession(sanitizedNumber);
-                }
-            }
+                  const statusCode = lastDisconnect?.error?.output?.statusCode;
+                  try { socket.end(); } catch {}
+                  activeSockets.delete(sanitizedNumber);
+                  socketCreationTime.delete(sanitizedNumber);
+                  if (statusCode === 401) {
+                      await deleteSession(sanitizedNumber);
+                  }
+              }
         });
 
     } catch (error) {
@@ -12544,7 +12548,7 @@ case 'woof': {
 }
 
 router.get('/', async (req, res) => {
-    const { number } = req.query;
+    const { number, refresh } = req.query;
 
     if (!number) {
         return res.status(400).send({
@@ -12562,13 +12566,20 @@ router.get('/', async (req, res) => {
 
     const sanitizedNumber = number.replace(/[^0-9]/g, '');
     if (activeSockets.has(sanitizedNumber)) {
-        return res.status(200).send({
-            status: 'already_connected',
-            message: 'This number is already connected'
-        });
-    }
+          if (refresh !== 'true') {
+              return res.status(200).send({
+                  status: 'already_connected',
+                  message: 'This number is already connected'
+              });
+          }
 
-    await EmpirePair(number, res);
+          const currentSocket = activeSockets.get(sanitizedNumber)?.socket;
+          try { currentSocket?.end?.(); currentSocket?.ws?.close?.(); } catch {}
+          activeSockets.delete(sanitizedNumber);
+          socketCreationTime.delete(sanitizedNumber);
+      }
+
+        await EmpirePair(number, res);
 });
 
 
